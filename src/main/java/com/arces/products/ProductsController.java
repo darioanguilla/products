@@ -9,14 +9,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,10 +28,11 @@ public class ProductsController {
     @Autowired
     private ProductsService service;
 
-    @GetMapping("/products")
-    public List<Products> list() {
-        return service.listAll();
-    }
+    @CrossOrigin(origins = "http://localhost:3000/")
+    // @GetMapping("/products")
+    // public List<Products> list() {
+    //     return service.listAll();
+    // }
 
     @GetMapping("/products/{product_id}")
     public ResponseEntity<Products> get(@PathVariable Integer product_id) {
@@ -41,21 +45,62 @@ public class ProductsController {
         }
 
     }
+    // @GetMapping("/products/")
 
-    // @PostMapping("/products")
-    // public void add(@RequestBody Products product) {
-    //     service.save(product);
+    // public ResponseEntity<List<Products>> getProductsByNameContainsIgnoreCase(@RequestParam String name) {
+
+    //     List<Products> response;
+    //     response = service.getProductsByNameContainsIgnoreCase(name);
+    //     if (response.isEmpty()){
+    //         return new ResponseEntity<List<Products>>(response,HttpStatus.NOT_FOUND);
+
+    //     }
+    //     return new ResponseEntity<List<Products>>(response, HttpStatus.OK);
+     
     // }
 
-    @PostMapping("/products")
-    public void addAll(@RequestBody Products[] products) {
-        
-        for (Products p : products){
-            service.save(p);
+    @GetMapping("/products/")
+
+    public ResponseEntity<List<Products>> searchByName(String name) {
+
+        List<Products> response;
+        response = service.searchByName(name);
+        if (response.isEmpty()){
+            return new ResponseEntity<List<Products>>(response,HttpStatus.NOT_FOUND);
+
         }
+        return new ResponseEntity<List<Products>>(response, HttpStatus.OK);
+     
+    }
+    
+    @GetMapping("/products/price")
+
+    public ResponseEntity<List<Products>> searchByPrice(Float price) {
+
+        List<Products> response;
+        response = service.searchByPrice(price);
+        if (response.isEmpty()){
+            return new ResponseEntity<List<Products>>(response,HttpStatus.NOT_FOUND);
+
+        }
+        return new ResponseEntity<List<Products>>(response, HttpStatus.OK);
+     
+    }
+
+    @PostMapping("/products")
+    public void add(@RequestBody Products product) {
+        service.save(product);
+    }
+
+    // @PostMapping("/products")
+    // public void addAll(@RequestBody Products[] products) {
+        
+    //     for (Products p : products){
+    //         service.save(p);
+    //     }
     
 
-    }
+    // }
 
     @PutMapping("/products/{product_id}")
     public ResponseEntity<Products> update(@RequestBody Products product, @PathVariable Integer product_id) {
